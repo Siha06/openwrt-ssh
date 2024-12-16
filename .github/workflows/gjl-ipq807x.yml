@@ -79,7 +79,7 @@ jobs:
       uses: HiGarfield/cachewrtbuild@main
       with:
         ccache: false
-        mixkey: ${{ env.SOURCE_REPO }}-${{ env.REPO_BRANCH }}-${{ env.SOURCE_AUTHOR }}-ipq60xx
+        mixkey: ${{ env.SOURCE_REPO }}-${{ env.REPO_BRANCH }}-${{ env.SOURCE_AUTHOR }}-ipq807x
         prefix: ${{ env.OPENWRT_PATH }}
 
     - name: Install Feeds(安装feeds)
@@ -100,8 +100,7 @@ jobs:
 
     - name: edit md5（编辑内核值）
       run: |
-        rm -rf $OPENWRT_PATH/.vermagic
-        mv $GITHUB_WORKSPACE/vm/vermagic-breeze $OPENWRT_PATH/vermagic
+        mv $GITHUB_WORKSPACE/vm/vermagic-gjl $OPENWRT_PATH/vermagic
         cd $OPENWRT_PATH
         sed -i '130d' include/kernel-defaults.mk
         sed -i '130i\\tcp $(TOPDIR)/vermagic $(LINUX_DIR)/.vermagic' include/kernel-defaults.mk
