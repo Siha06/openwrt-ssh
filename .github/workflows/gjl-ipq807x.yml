@@ -1,4 +1,4 @@
-name: gjl-ipq807x-wifi
+name: gjl-ipq807x
 # 脚本参考github/haiibo
 # Add a button to trigger the workflow
 on: 
@@ -92,6 +92,7 @@ jobs:
   
     - name: Load Custom Script(加载自定义脚本)
       run: |
+        mv $CONFIG_FILE $OPENWRT_PATH/.config
         chmod +x $DIY_SCRIPT
         cd $OPENWRT_PATH
         $GITHUB_WORKSPACE/$DIY_SCRIPT
@@ -107,9 +108,15 @@ jobs:
         sed -i '29d' package/kernel/linux/Makefile
         sed -i '29i\  STAMP_BUILT:=$(STAMP_BUILT)_$(shell cat $(LINUX_DIR)/.vermagic)' package/kernel/linux/Makefile
 
+    - name: SSH链接管理
+      uses: P3TERX/ssh2actions@v1.0.0
+      if: env.SSH_ACTIONS == 'true'
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
     - name: Download DL Package(下载DL软件包)
       run: |
-        mv $CONFIG_FILE $OPENWRT_PATH/.config
         cd $OPENWRT_PATH
         make defconfig
         cat .config
@@ -164,9 +171,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         artifacts: ${{ env.FIRMWARE_PATH }}/*
         body: |
-          ### 📒 固件信息(带WIFI)
-          - 这是带WIFI以及NSS的6.6内核固件
-          - 💻 这是 ${{ env.FIRMWARE_TAG }} 平台使用的 OpenWrt 固件
+          ### 📒 固件信息
           - ⚽ 固件源码: ${{ env.REPO_URL }}
           - 💝 源码分支: ${{ env.REPO_BRANCH }}
           - 🌐 默认地址: 192.168.13.1
